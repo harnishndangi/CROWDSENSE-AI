@@ -65,15 +65,24 @@ const LOCATION_GROUPS = [
   },
 ];
 
+/** Exact registry names — backend has spot-specific narratives + verified Haversine neighbors for these. */
+const JUDGE_DEMO_QUERIES = [
+  "How crowded is Dadar Station during weekday evening rush?",
+  "Will Andheri Station be crowded at 9 AM on a Tuesday?",
+  "Crowd level at CST / CSMT for morning office commuters?",
+  "How busy is Kurla Station when Harbour line has delays?",
+  "Is Ghatkopar Station crowded on weekend afternoons?",
+  "Crowd at BKC during weekday lunch hours?",
+  "How crowded is Juhu Beach on a Sunday evening?",
+  "Visit Siddhivinayak Temple — best time to avoid long queues?",
+  "How busy is Gateway of India on a Saturday?",
+  "Is Phoenix Palladium crowded on Saturday evening?",
+];
+
 const SUGGESTIONS = [
-  "Will Andheri Station be crowded during evening rush today?",
-  "Best time to visit Siddhivinayak Temple on weekends?",
-  "How busy is Juhu Beach on Sunday evenings?",
-  "Is Phoenix Palladium crowded on Saturday afternoons?",
-  "Which station on WR line is least crowded at 9 AM?",
-  "Will Dadar auto stand have long queues at 7 PM?",
-  "How crowded is BKC during office hours?",
-  "Best time to visit Crawford Market on a weekday?",
+  "Which WR station is usually calmer than Dadar at peak?",
+  "How does Thane Station compare to Kurla for evening rush?",
+  "Is Bandra Station worse on Monday mornings or Friday evenings?",
 ];
 
 const AGENT_STEPS = [
@@ -94,13 +103,13 @@ const TRACE_ICONS: Record<string, string> = {
 };
 
 const TRACE_COLORS: Record<string, { color: string; glow: string }> = {
-  model:     { color: "#A78BFA", glow: "rgba(167,139,250,0.6)" }, // Purple
-  llm:       { color: "#3B82F6", glow: "rgba(59,130,246,0.6)" },   // Blue
-  event:     { color: "#F97316", glow: "rgba(249,115,22,0.6)" },   // Orange
-  rec:       { color: "#F5C518", glow: "rgba(245,197,24,0.6)" },   // Yellow
+  model: { color: "#A78BFA", glow: "rgba(167,139,250,0.6)" }, // Purple
+  llm: { color: "#3B82F6", glow: "rgba(59,130,246,0.6)" },   // Blue
+  event: { color: "#F97316", glow: "rgba(249,115,22,0.6)" },   // Orange
+  rec: { color: "#F5C518", glow: "rgba(245,197,24,0.6)" },   // Yellow
   telemetry: { color: "#10B981", glow: "rgba(16,185,129,0.6)" },   // Green
-  error:     { color: "#FF2D55", glow: "rgba(255,45,85,0.7)" },    // Red
-  default:   { color: "rgba(255,255,255,0.7)", glow: "rgba(255,255,255,0.1)" },
+  error: { color: "#FF2D55", glow: "rgba(255,45,85,0.7)" },    // Red
+  default: { color: "rgba(255,255,255,0.7)", glow: "rgba(255,255,255,0.1)" },
 };
 
 const TRACE_MAP: Record<string, string> = {
@@ -149,7 +158,7 @@ export default function CommuterTab() {
   const [isListening, setIsListening] = useState(false);
   const [speechLang, setSpeechLang] = useState("hi-IN");
   const [reportStatus, setReportStatus] = useState<string | null>(null);
-  const [hoveredSuggestion, setHoveredSuggestion] = useState<number | null>(null);
+  const [hoveredChip, setHoveredChip] = useState<string | null>(null);
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
 
   const traceRef = useRef<HTMLDivElement>(null);
@@ -778,18 +787,40 @@ export default function CommuterTab() {
               </div>
             </div>
 
-            {/* Chips */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 20 }}>
-              {SUGGESTIONS.slice(0, 4).map((s, i) => (
-                <button key={s}
-                  onClick={() => { setQuery(s); queryRef.current?.focus(); }}
-                  className={`ct-chip${hoveredSuggestion === i ? " active" : ""}`}
-                  onMouseEnter={() => setHoveredSuggestion(i)}
-                  onMouseLeave={() => setHoveredSuggestion(null)}
-                >
-                  {s.length > 48 ? s.slice(0, 48) + "…" : s}
-                </button>
-              ))}
+            {/* Demo chips — curated registry spots for judge presentations */}
+            <div style={{ marginBottom: 14 }}>
+              <div className="ct-mono-label" style={{ marginBottom: 8 }}>Demo queries (spot-specific AI)</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {JUDGE_DEMO_QUERIES.map((s, i) => (
+                  <button
+                    key={`demo-${i}`}
+                    type="button"
+                    onClick={() => { setQuery(s); queryRef.current?.focus(); }}
+                    className={`ct-chip${hoveredChip === `d${i}` ? " active" : ""}`}
+                    onMouseEnter={() => setHoveredChip(`d${i}`)}
+                    onMouseLeave={() => setHoveredChip(null)}
+                  >
+                    {s.length > 52 ? s.slice(0, 52) + "…" : s}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div style={{ marginBottom: 20 }}>
+              <div className="ct-mono-label" style={{ marginBottom: 8 }}>More examples</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {SUGGESTIONS.map((s, i) => (
+                  <button
+                    key={`ex-${i}`}
+                    type="button"
+                    onClick={() => { setQuery(s); queryRef.current?.focus(); }}
+                    className={`ct-chip${hoveredChip === `e${i}` ? " active" : ""}`}
+                    onMouseEnter={() => setHoveredChip(`e${i}`)}
+                    onMouseLeave={() => setHoveredChip(null)}
+                  >
+                    {s.length > 52 ? s.slice(0, 52) + "…" : s}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Submit */}
@@ -918,11 +949,11 @@ export default function CommuterTab() {
                     const theme = getTraceTheme(t);
                     return (
                       <div key={i} className="lg-trace-line trace-in" style={{ animationDelay: `${i * 0.05}s` }}>
-                        <span className="lg-trace-icon" style={{ 
-                          color: theme.color, 
-                          textShadow: `0 0 10px ${theme.glow}` 
+                        <span className="lg-trace-icon" style={{
+                          color: theme.color,
+                          textShadow: `0 0 10px ${theme.glow}`
                         }}>{theme.icon}</span>
-                        <span className="lg-trace-text" style={{ 
+                        <span className="lg-trace-text" style={{
                           color: theme.color,
                           opacity: 0.9,
                           textShadow: `0 0 12px ${theme.glow}`
@@ -1015,7 +1046,9 @@ export default function CommuterTab() {
                       {result.suggestions.map((s: string, i: number) => (
                         <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "8px 0", borderBottom: i < result.suggestions.length - 1 ? "1px solid var(--line)" : "none" }}>
                           <span style={{ color: "var(--accent)", fontSize: 10, flexShrink: 0, marginTop: 3, fontWeight: 700 }}>✦</span>
-                          <span style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--text2)", lineHeight: 1.55 }}>{s}</span>
+                          <span style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--text2)", lineHeight: 1.55 }}>
+                            <ParseMarkdown text={s} />
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -1024,7 +1057,10 @@ export default function CommuterTab() {
 
                 {bestTimes.length > 0 && (
                   <div className="ct-panel slide-up" style={{ padding: "24px 28px", animationDelay: "0.1s" }}>
-                    <div className="ct-overline" style={{ marginBottom: 16 }}>Best Times to Visit</div>
+                    <div className="ct-overline" style={{ marginBottom: 16 }}>Best times to visit (model score by hour)</div>
+                    <div style={{ fontSize: 10, color: "var(--muted)", fontFamily: "var(--font-mono)", marginBottom: 12, lineHeight: 1.4 }}>
+                      Bars show predicted crowd score for that hour — not travel time or distance.
+                    </div>
                     <div>
                       {bestTimes.slice(0, 4).map((bt, i) => {
                         const bm = getCrowdMeta(bt.crowd_score <= 30 ? "Low" : bt.crowd_score <= 60 ? "Moderate" : bt.crowd_score <= 80 ? "High" : "Very High");
@@ -1229,5 +1265,28 @@ function SignalCard({ label, value, detail, pct, color, icon }: {
         </div>
       )}
     </div>
+  );
+}
+
+/* ── ParseMarkdown (renders **bold** text) ─────────────────────────────────── */
+function ParseMarkdown({ text }: { text: string }) {
+  // Parse **bold** syntax and render as React elements
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part.startsWith("**") && part.endsWith("**")) {
+          // Extract text between ** and render as bold
+          const boldText = part.slice(2, -2);
+          return (
+            <strong key={i} style={{ fontWeight: 700, color: "var(--text)" }}>
+              {boldText}
+            </strong>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </>
   );
 }

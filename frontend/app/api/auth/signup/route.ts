@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "../../../lib/supabaseClient";
+import { supabaseAdmin } from "../../../lib/supabaseServer";
+import { devSignup, isSupabaseAuthConfigured } from "../../../lib/authBackend";
 
 export async function POST(req: Request) {
   try {
@@ -9,8 +11,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Insert directly into the public.users table
-    const { data, error } = await supabase
+    if (!isSupabaseAuthConfigured()) {
+      const out = devSignup(fullName, email, password);
+      if ("error" in out) {
+        return NextResponse.json({ error: out.error }, { status: 400 });
+      }
+      return NextResponse.json({ success: true, user: out.user });
+    }
+
+    const client = supabaseAdmin ?? supabase;
+    const { data, error } = await client
       .from("users")
       .insert([{ name: fullName, email, password }])
       .select()
@@ -21,7 +31,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, user: data });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Something went wrong" }, { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Something went wrong";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

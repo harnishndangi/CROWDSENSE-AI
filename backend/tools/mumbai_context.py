@@ -25,6 +25,15 @@ MUMBAI_LOCATIONS = {
     "Dadar Station":            {"type": "railway", "lat": 19.0178, "lon": 72.8478, "line": "WR", "tide_sensitive": False, "event_prone": True},
 
     # ════════════════════════════════════════
+    # 🚉 RAILWAY STATIONS — Beyond Mumbai (Thane District)
+    # ════════════════════════════════════════
+    "Kalyan Station":           {"type": "railway", "lat": 19.2359, "lon": 73.1299, "line": "CR", "tide_sensitive": False, "event_prone": False},
+    "Dombivali Station":        {"type": "railway", "lat": 19.2184, "lon": 73.0843, "line": "CR", "tide_sensitive": False, "event_prone": False},
+    "Ulhasnagar Station":         {"type": "railway", "lat": 19.2215, "lon": 73.1636, "line": "CR", "tide_sensitive": False, "event_prone": False},
+    "Ambernath Station":          {"type": "railway", "lat": 19.2083, "lon": 73.1936, "line": "CR", "tide_sensitive": False, "event_prone": False},
+    "Badlapur Station":           {"type": "railway", "lat": 19.1668, "lon": 73.2362, "line": "CR", "tide_sensitive": False, "event_prone": False},
+
+    # ════════════════════════════════════════
     # 🚉 RAILWAY STATIONS — Central Line (CR)
     # ════════════════════════════════════════
     "CST / CSMT":               {"type": "railway", "lat": 18.9400, "lon": 72.8354, "line": "CR", "tide_sensitive": False, "event_prone": True},
@@ -131,6 +140,60 @@ MUMBAI_LOCATIONS = {
     "Wankhede Stadium":         {"type": "stadium", "lat": 18.9375, "lon": 72.8252, "tide_sensitive": False, "event_prone": True},
     "DY Patil Stadium":         {"type": "stadium", "lat": 19.0434, "lon": 73.0179, "tide_sensitive": False, "event_prone": True},
 }
+
+def calculate_distance(lat1, lon1, lat2, lon2):
+    """Calculate Haversine distance between two points in km."""
+    import math
+    R = 6371  # Earth's radius in km
+    
+    lat1_rad = math.radians(lat1)
+    lat2_rad = math.radians(lat2)
+    delta_lat = math.radians(lat2 - lat1)
+    delta_lon = math.radians(lon2 - lon1)
+    
+    a = (math.sin(delta_lat / 2) ** 2 + 
+         math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(delta_lon / 2) ** 2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    
+    return R * c
+
+def get_nearby_events(location_name, events_list, max_distance_km=10):
+    """
+    Filter events to only those within max_distance_km of the location.
+    Returns events that are actually relevant to the location.
+    """
+    meta = get_location_metadata(location_name)
+    if not meta or meta.get("type") == "unknown":
+        return []  # Don't cite events for unknown locations
+    
+    loc_lat = meta.get("lat", 19.0760)
+    loc_lon = meta.get("lon", 72.8777)
+    
+    nearby_events = []
+    for event in events_list:
+        if not isinstance(event, dict):
+            continue
+        
+        # Check if event has location data
+        event_lat = event.get("lat")
+        event_lon = event.get("lon")
+        
+        # If event has no coordinates, check event name against location
+        if event_lat is None or event_lon is None:
+            event_name = event.get("name", "").lower()
+            # Only include event if it's explicitly near this location
+            loc_lower = location_name.lower()
+            if any(word in event_name for word in loc_lower.split()):
+                nearby_events.append(event)
+            continue
+        
+        # Calculate distance
+        distance = calculate_distance(loc_lat, loc_lon, event_lat, event_lon)
+        if distance <= max_distance_km:
+            event["distance_km"] = round(distance, 1)
+            nearby_events.append(event)
+    
+    return nearby_events
 
 # Signal Weights per Location Type
 SIGNAL_WEIGHTS = {

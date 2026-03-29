@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useAuthGuard } from "../lib/useAuthGuard";
 import { api } from "../lib/api";
+import CrowdDensityGraph from "../components/CrowdDensityGraph";
 
 
 const NAV_LINKS = [
@@ -54,16 +55,17 @@ export default function DashboardPage() {
   const [pulseColor, setPulseColor] = useState("#555");
   const [pulseAdvice, setPulseAdvice] = useState("");
   const [criticalCount, setCriticalCount] = useState(0);
-  const [liveTopZones, setLiveTopZones] = useState<{location:string;score:number;type:string}[]>([]);
+  const [liveTopZones, setLiveTopZones] = useState<{ location: string; score: number; type: string }[]>([]);
   const [pulseLoading, setPulseLoading] = useState(true);
 
   // Dynamic state replacing static arrays
   const [zonesData, setZonesData] = useState(ZONE_DATA_BASE.map(z => ({ ...z, avgCrowd: z.defaultCrowd })));
-  const [topCrowded, setTopCrowded] = useState<{name:string;line:string;score:number;delta:string;trend:string;}[]>([]);
+  const [topCrowded, setTopCrowded] = useState<{ name: string; line: string; score: number; delta: string; trend: string; }[]>([]);
   const [hourlyScores, setHourlyScores] = useState<number[]>(Array(18).fill(30));
 
-  // Safety scores cache {location → {grade, color, safety_score}}
-  const [safetyCache, setSafetyCache] = useState<Record<string, {grade:string;color:string;safety_score:number}>>({});
+  // Low crowd spots configuration
+  const LOW_CROWD_THRESHOLD = 40; // Configurable threshold for low crowd
+  const [lowCrowdSpots, setLowCrowdSpots] = useState<{ name: string; line: string; score: number; type: string }[]>([]);
 
   useEffect(() => {
     const tick = () => {
@@ -97,15 +99,28 @@ export default function DashboardPage() {
           setPulseAdvice(d.advice);
           setCriticalCount(d.critical_zone_count || 0);
           setLiveTopZones(d.top_crowded || []);
-          
+
           if (d.top_crowded) {
             setTopCrowded(d.top_crowded.map((z: any, i: number) => ({
-               name: z.location.split(" ")[0] || "Unknown",
-               line: z.type.toUpperCase(),
-               score: z.score,
-               delta: i % 2 === 0 ? "+2" : "-1",
-               trend: i % 2 === 0 ? "↑" : "↓",
-             })));
+              name: z.location.split(" ")[0] || "Unknown",
+              line: z.type.toUpperCase(),
+              score: z.score,
+              delta: i % 2 === 0 ? "+2" : "-1",
+              trend: i % 2 === 0 ? "↑" : "↓",
+            })));
+
+            // Generate low crowd spots from zones with score below threshold
+            const lowSpots = zonesData
+              .filter(z => z.avgCrowd < LOW_CROWD_THRESHOLD)
+              .map(z => ({
+                name: z.zone,
+                line: z.mode.toUpperCase(),
+                score: z.avgCrowd,
+                type: "low"
+              }))
+              .sort((a, b) => a.score - b.score) // Lowest first
+              .slice(0, 5); // Top 5 lowest
+            setLowCrowdSpots(lowSpots);
           }
           setPulseLoading(false);
         }
@@ -137,16 +152,16 @@ export default function DashboardPage() {
             return { ...zb, avgCrowd: zb.defaultCrowd };
           }));
         }
-        
+
         // Heatmap for hourly graph
         const hd = await api.getHeatmap("Mumbai");
         if (hd) {
-          const todayIdx = (new Date().getDay() + 6) % 7; 
+          const todayIdx = (new Date().getDay() + 6) % 7;
           if (hd.heatmap && hd.heatmap[todayIdx]) {
-            setHourlyScores(hd.heatmap[todayIdx]); 
+            setHourlyScores(hd.heatmap[todayIdx]);
           }
         }
-      } catch(e) {}
+      } catch (e) { }
     };
     fetchAverages();
     const iv2 = setInterval(fetchAverages, 60000); // refresh every 1min
@@ -318,9 +333,9 @@ export default function DashboardPage() {
                       {/* Safety grade badge from live API */}
                       {(() => {
                         const stn = z.zone.includes("Western") ? "Andheri Station" :
-                                    z.zone.includes("Central") ? "CST / CSMT" :
-                                    z.zone.includes("Harbour") ? "Kurla Station" :
-                                    z.zone.includes("Thane") ? "Thane Station" : null;
+                          z.zone.includes("Central") ? "CST / CSMT" :
+                            z.zone.includes("Harbour") ? "Kurla Station" :
+                              z.zone.includes("Thane") ? "Thane Station" : null;
                         const sc = stn ? safetyCache[stn] : null;
                         return sc ? (
                           <div style={{ display: "inline-flex", alignItems: "center", gap: 4, marginTop: 6, padding: "2px 8px", border: `1px solid ${sc.color}`, background: `${sc.color}18` }}>
@@ -347,6 +362,34 @@ export default function DashboardPage() {
 
           {/* Right Panel */}
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            {/* Low Crowd Spots - Alternative Routes */}
+            <div style={{ background: "#111", border: "1px solid #1e1e1e" }}>
+              <div style={{ padding: "16px 20px", borderBottom: "1px solid #1e1e1e", display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#22C55E", display: "inline-block", animation: "live-pulse 1.4s ease-in-out infinite" }} />
+                <span style={{ fontFamily: "var(--font-condensed)", fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#666" }}>Low Crowd Alternatives (&lt;{LOW_CROWD_THRESHOLD}%)</span>
+              </div>
+              {lowCrowdSpots.length > 0 ? (
+                lowCrowdSpots.map((s, i) => (
+                  <div key={s.name} style={{ padding: "14px 20px", borderBottom: i < lowCrowdSpots.length - 1 ? "1px solid #1a1a1a" : "none", display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ fontFamily: "var(--font-heading)", fontSize: 13, fontWeight: 800, color: "#22C55E", width: 20 }}>●</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontFamily: "var(--font-heading)", fontSize: 14, fontWeight: 700, color: "#fff" }}>{s.name}</div>
+                      <div style={{ fontFamily: "var(--font-condensed)", fontSize: 10, color: "#444", letterSpacing: "0.08em" }}>{s.line} · Alternative Route</div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800, color: "#22C55E" }}>{s.score}%</div>
+                      <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "#22C55E" }}>LOW</div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div style={{ padding: "20px", textAlign: "center" }}>
+                  <div style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#666" }}>No low crowd spots available</div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "#444", marginTop: 4 }}>All zones above {LOW_CROWD_THRESHOLD}% capacity</div>
+                </div>
+              )}
+            </div>
+
             {/* Top Crowded */}
             <div style={{ background: "#111", border: "1px solid #1e1e1e" }}>
               <div style={{ padding: "16px 20px", borderBottom: "1px solid #1e1e1e", display: "flex", alignItems: "center", gap: 8 }}>
@@ -448,6 +491,21 @@ export default function DashboardPage() {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* CROWD DENSITY GRAPH - Location Specific Predictions */}
+      <div style={{ padding: "0 clamp(20px,5vw,64px) 32px" }}>
+        <CrowdDensityGraph
+          title="Crowd Density by Location"
+          subtitle="AI-predicted crowd scores with location-specific values"
+          locations={zonesData.map(z => ({
+            name: z.zone,
+            density: z.avgCrowd,
+            type: z.mode,
+            predicted: true
+          })).sort((a, b) => b.density - a.density)}
+          maxBars={8}
+        />
       </div>
 
       {/* FOOTER */}

@@ -26,15 +26,356 @@ except Exception as e:
     print(f"Could not load model: {e}")
 
 
-@router.get("/health")
-async def health_check():
-    return {"status": "ok"}
+@router.get("/debug-signals")
+async def debug_signals(location: str, hour: int | None = None):
+    """
+    DEBUG endpoint: Returns all 16 raw parameter values used by the ML model.
+    For judges to examine data transparency - shows exactly what signals are fetched.
+    """
+    from datetime import datetime
+    from tools.weather_tool import get_weather
+    from tools.traffic_tool import get_traffic
+    from tools.tide_tool import get_tides
+    from tools.event_tool import get_events
+    from tools.aqi_tool import get_aqi
+    from tools.x_tool import get_x_signals
+    from tools.mumbai_context import get_location_metadata
+    
+    now = datetime.now()
+    h = hour if hour is not None else now.hour
+    day_of_week = now.weekday()
+    is_weekend = 1 if day_of_week >= 5 else 0
+    is_workday = 1 - is_weekend
+    
+    # Get location metadata
+    meta = get_location_metadata(location) or {"type": "railway", "lat": 19.0760, "lon": 72.8777}
+    loc_type = meta.get("type", "railway")
+    
+    # Fetch all real-time signals
+    weather = get_weather(lat=meta.get("lat", 19.0760), lon=meta.get("lon", 72.8777))
+    traffic = get_traffic(
+        origin_lat=meta.get("lat", 19.0760), 
+        origin_lon=meta.get("lon", 72.8777),
+        dest_lat=19.0760,  # Central Mumbai reference
+        dest_lon=72.8777
+    )
+    tides = get_tides(lat=meta.get("lat", 19.0760), lon=meta.get("lon", 72.8777))
+    events = get_events(lat=meta.get("lat", 19.0760), lon=meta.get("lon", 72.8777), radius_km=5.0)
+    aqi = get_aqi()
+    social = get_x_signals(location=location)
+    
+    # Build the 16 feature values
+    zone_id = abs(hash(location)) % 50
+    cat_map = {
+        "railway": 0, "beach": 1, "market": 2, "office_zone": 3,
+        "religious": 4, "hospital": 5, "airport": 6, "stadium": 7,
+        "tourism": 8, "transit_hub": 9, "metro": 10, "bus_stop": 11,
+        "auto_zone": 12, "mall": 13
+    }
+    category = cat_map.get(loc_type, 0)
+    
+    # Area type (0=residential, 1=commercial, 2=mixed, 3=tourist)
+    area_type_map = {
+        "railway": 2, "metro": 2, "transit_hub": 2, "office_zone": 1,
+        "mall": 1, "market": 2, "beach": 3, "tourism": 3,
+        "religious": 2, "residential": 0
+    }
+    area_type = area_type_map.get(loc_type, 2)
+    
+    # Weather condition encoding
+    weather_cond = weather.get("condition", "Clear").lower()
+    weather_map = {"clear": 0, "cloudy": 1, "rain": 2, "thunderstorm": 3, "fog": 4}
+    weather_encoded = next((v for k, v in weather_map.items() if k in weather_cond), 0)
+    
+    # Month check for monsoon (June-Sept)
+    is_monsoon = 1 if now.month in [6, 7, 8, 9] else 0
+    
+    # Simple holiday check (weekends + known holidays)
+    is_holiday = is_weekend  # Simplified
+    holiday_type = 0 if not is_holiday else (2 if is_weekend else 1)
+    
+    # Line density (estimated based on location type)
+    line_density_map = {
+        "railway": 85, "metro": 70, "transit_hub": 90, "bus_stop": 60,
+        "auto_zone": 45, "mall": 55, "office_zone": 65, "market": 75,
+        "beach": 40, "religious": 50, "tourism": 35, "airport": 80,
+        "stadium": 70
+    }
+    line_density = line_density_map.get(loc_type, 50)
+    
+    signals = {
+        # Core temporal features
+        "day_of_week": {"value": day_of_week, "label": "Day of Week (0=Mon)", "source": "system", "raw": now.strftime("%A")},
+        "hour": {"value": h, "label": "Hour of Day", "source": "user_input", "raw": f"{h}:00"},
+        "is_weekend": {"value": is_weekend, "label": "Is Weekend", "source": "derived", "raw": day_of_week >= 5},
+        "is_workday": {"value": is_workday, "label": "Is Workday", "source": "derived", "raw": day_of_week < 5},
+        
+        # Location features  
+        "zone": {"value": zone_id, "label": "Zone ID", "source": "location_hash", "raw": location},
+        "category": {"value": category, "label": "Category", "source": "location_meta", "raw": loc_type},
+        "area_type": {"value": area_type, "label": "Area Type", "source": "location_meta", "raw": ["residential", "commercial", "mixed", "tourist"][area_type]},
+        
+        # Weather features (Live API)
+        "weather_condition": {"value": weather_encoded, "label": "Weather Condition", "source": "OpenWeather API", "raw": weather.get("condition", "N/A")},
+        "is_monsoon_season": {"value": is_monsoon, "label": "Monsoon Season", "source": "derived", "raw": now.month in [6,7,8,9]},
+        "is_public_holiday": {"value": is_holiday, "label": "Public Holiday", "source": "calendar", "raw": "Weekend" if is_weekend else "No"},
+        "temp": {"value": weather.get("temp", 28.0), "label": "Temperature (°C)", "source": "OpenWeather API", "raw": f"{weather.get('temp', 28.0)}°C"},
+        "humidity": {"value": weather.get("humidity", 72.0), "label": "Humidity (%)", "source": "OpenWeather API", "raw": f"{weather.get('humidity', 72.0)}%"},
+        "windspeed": {"value": weather.get("windspeed", 12.0), "label": "Wind Speed (km/h)", "source": "OpenWeather API", "raw": f"{weather.get('windspeed', 12.0)} km/h"},
+        "precipprob": {"value": weather.get("rain", 0.0), "label": "Precipitation Probability", "source": "OpenWeather API", "raw": f"{weather.get('rain', 0.0)}mm"},
+        
+        # Holiday type
+        "holiday_type": {"value": holiday_type, "label": "Holiday Type", "source": "calendar", "raw": ["None", "Public", "Weekend"][holiday_type]},
+        
+        # Derived feature
+        "line_density": {"value": line_density, "label": "Line Density", "source": "location_meta", "raw": f"{line_density}/100"},
+    }
+    
+    # Additional signals not in the 16 but relevant for judges
+    extra_signals = {
+        "traffic_congestion": {"value": traffic.get("congestion_ratio", 1.0), "label": "Traffic Congestion Ratio", "source": "TomTom/Google Maps API", "raw": traffic},
+        "traffic_level": {"value": traffic.get("traffic_level", 1), "label": "Traffic Level", "source": "TomTom/Google Maps API", "raw": traffic.get("traffic_level", 1)},
+        "aqi": {"value": aqi.get("aqi", 85), "label": "Air Quality Index", "source": "AirVisual API", "raw": aqi},
+        "tide_level": {"value": tides.get("tide_level", "N/A"), "label": "Tide Level", "source": "WorldTides API", "raw": tides},
+        "tide_height": {"value": tides.get("height", 1.5), "label": "Tide Height (m)", "source": "WorldTides API", "raw": f"{tides.get('height', 1.5)}m"},
+        "active_events_count": {"value": len(events) if isinstance(events, list) else 0, "label": "Active Events Nearby", "source": "PredictHQ API", "raw": events},
+        "social_sentiment": {"value": social.get("sentiment", "Neutral"), "label": "Social Sentiment", "source": "X/Twitter API", "raw": social},
+    }
+    
+    return {
+        "query": f"Debug signals for {location} at hour {h}",
+        "location": location,
+        "hour": h,
+        "timestamp": now.isoformat(),
+        "ml_model_features": {
+            "count": 16,
+            "features": signals,
+            "feature_array": [
+                day_of_week, h, is_weekend, is_workday, zone_id, category, area_type,
+                weather_encoded, is_monsoon, is_holiday,
+                weather.get("temp", 28.0), weather.get("humidity", 72.0),
+                weather.get("windspeed", 12.0), weather.get("rain", 0.0),
+                holiday_type, line_density
+            ]
+        },
+        "additional_live_signals": extra_signals,
+        "data_sources": {
+            "weather": "OpenWeather API" if weather.get("temp") else "Fallback/Simulated",
+            "traffic": "TomTom/Google Maps API" if traffic.get("congestion_ratio") != 1.0 else "Fallback/Simulated",
+            "tides": "WorldTides API" if tides.get("height") else "Fallback/Simulated",
+            "events": "PredictHQ API" if isinstance(events, list) and len(events) > 0 else "No data/Fallback",
+            "aqi": "AirVisual API" if aqi.get("aqi") != 85 else "Fallback/Simulated",
+            "social": "X/Twitter API" if not social.get("status", "").startswith("Error") else "Fallback/Simulated"
+        }
+    }
+
 
 
 @router.get("/predict")
 async def dummy_predict(location: str | None = None, hour: int | None = None):
     # Dummy response as per Task 2
     return {"crowd": "High", "confidence": 85}
+
+
+@router.get("/predict-detailed")
+async def predict_detailed(location: str, hour: int | None = None):
+    """
+    DETAILED PREDICTION endpoint for judges:
+    Returns all 16 ML model parameters with live/simulated source labels
+    AND the model-based crowd prediction with confidence.
+    """
+    from datetime import datetime
+    from tools.weather_tool import get_weather
+    from tools.traffic_tool import get_traffic
+    from tools.tide_tool import get_tides
+    from tools.event_tool import get_events
+    from tools.aqi_tool import get_aqi
+    from tools.x_tool import get_x_signals
+    from tools.mumbai_context import get_location_metadata
+    import math
+    
+    now = datetime.now()
+    h = hour if hour is not None else now.hour
+    day_of_week = now.weekday()
+    is_weekend = 1 if day_of_week >= 5 else 0
+    is_workday = 1 - is_weekend
+    
+    # Get location metadata
+    meta = get_location_metadata(location) or {"type": "railway", "lat": 19.0760, "lon": 72.8777}
+    loc_type = meta.get("type", "railway")
+    
+    # Fetch all real-time signals with source tracking
+    weather = get_weather(lat=meta.get("lat", 19.0760), lon=meta.get("lon", 72.8777))
+    weather_source = weather.get("source", "simulated")
+    
+    # For traffic, we need to use string addresses
+    traffic_origin = f"{location}, Mumbai"
+    traffic_dest = "Dadar Station, Mumbai"
+    traffic = get_traffic(origin=traffic_origin, destination=traffic_dest)
+    traffic_source = traffic.get("source", "simulated")
+    
+    tides = get_tides(location=location) if meta.get("tide_sensitive", False) else {"tide_level": "N/A", "height": 0, "source": "N/A"}
+    tides_source = tides.get("source", "N/A")
+    
+    events = get_events()
+    events_source = "live" if isinstance(events, list) and len(events) > 0 and events[0].get("name") != "Regular Mumbai Commute" else "simulated"
+    
+    aqi = get_aqi()
+    aqi_source = aqi.get("source", "simulated")
+    
+    social = get_x_signals(location=location)
+    social_source = "live" if "Live" in social.get("status", "") else "simulated"
+    
+    # Build the 16 feature values with sources
+    zone_id = abs(hash(location)) % 50
+    cat_map = {
+        "railway": 0, "beach": 1, "market": 2, "office_zone": 3,
+        "religious": 4, "hospital": 5, "airport": 6, "stadium": 7,
+        "tourism": 8, "transit_hub": 9, "metro": 10, "bus_stop": 11,
+        "auto_zone": 12, "mall": 13
+    }
+    category = cat_map.get(loc_type, 0)
+    
+    area_type_map = {
+        "railway": 2, "metro": 2, "transit_hub": 2, "office_zone": 1,
+        "mall": 1, "market": 2, "beach": 3, "tourism": 3,
+        "religious": 2, "residential": 0
+    }
+    area_type = area_type_map.get(loc_type, 2)
+    
+    weather_cond = weather.get("condition", "Clear").lower()
+    weather_map = {"clear": 0, "cloudy": 1, "rain": 2, "thunderstorm": 3, "fog": 4}
+    weather_encoded = next((v for k, v in weather_map.items() if k in weather_cond), 0)
+    
+    is_monsoon = 1 if now.month in [6, 7, 8, 9] else 0
+    is_holiday = is_weekend
+    holiday_type = 0 if not is_holiday else (2 if is_weekend else 1)
+    
+    line_density_map = {
+        "railway": 85, "metro": 70, "transit_hub": 90, "bus_stop": 60,
+        "auto_zone": 45, "mall": 55, "office_zone": 65, "market": 75,
+        "beach": 40, "religious": 50, "tourism": 35, "airport": 80,
+        "stadium": 70
+    }
+    line_density = line_density_map.get(loc_type, 50)
+    
+    # Build feature array for ML model
+    feature_values = [
+        day_of_week, h, is_weekend, is_workday, zone_id, category, area_type,
+        weather_encoded, is_monsoon, is_holiday,
+        weather.get("temp", 28.0), weather.get("humidity", 72.0),
+        weather.get("windspeed", 12.0), weather.get("rain", 0.0),
+        holiday_type, line_density
+    ]
+    
+    feature_names = [
+        "day_of_week", "hour", "is_weekend", "is_workday", "zone", "category", "area_type",
+        "weather_condition", "is_monsoon_season", "is_public_holiday",
+        "temp", "humidity", "windspeed", "precipprob", "holiday_type", "line_density"
+    ]
+    
+    feature_sources = [
+        "system", "user_input", "derived", "derived", "location_hash", "location_meta", "location_meta",
+        weather_source, "derived", "calendar",
+        weather_source, weather_source, weather_source, weather_source,
+        "calendar", "location_meta"
+    ]
+    
+    # Create detailed features list
+    features_detailed = []
+    for i, (name, value, source) in enumerate(zip(feature_names, feature_values, feature_sources)):
+        features_detailed.append({
+            "index": i,
+            "name": name,
+            "value": value,
+            "source": source,
+            "is_live": source in ["live", "system", "user_input", "OpenWeather API"] or "API" in str(source)
+        })
+    
+    # Run ML model prediction
+    prediction_result = {
+        "crowd_score": None,
+        "crowd_label": None,
+        "confidence": None,
+        "model_used": None
+    }
+    
+    if crowd_model:
+        try:
+            features_array = [feature_values]  # 2D array for sklearn
+            proba = crowd_model.predict_proba(features_array)[0]
+            score = int(round(proba[1] * 30 + proba[2] * 65 + proba[3] * 100))
+            confidence = float(max(proba))
+            
+            # Determine label
+            if score <= 30:
+                label = "Low"
+            elif score <= 60:
+                label = "Moderate"
+            elif score <= 80:
+                label = "High"
+            else:
+                label = "Very High"
+            
+            prediction_result = {
+                "crowd_score": score,
+                "crowd_label": label,
+                "confidence": round(confidence * 100, 1),
+                "model_used": "Random Forest (ML)",
+                "class_probabilities": {
+                    "low": round(proba[0] * 100, 1),
+                    "moderate": round(proba[1] * 100, 1),
+                    "high": round(proba[2] * 100, 1),
+                    "very_high": round(proba[3] * 100, 1)
+                }
+            }
+        except Exception as e:
+            # Fall back to heuristic
+            score = get_mock_crowd_score(location, h, "weekend" if is_weekend else "weekday")
+            prediction_result = {
+                "crowd_score": score,
+                "crowd_label": "Moderate" if score <= 60 else "High" if score <= 80 else "Very High",
+                "confidence": 70.0,
+                "model_used": "Heuristic (ML model error)",
+                "error": str(e)
+            }
+    else:
+        # No ML model - use heuristic
+        score = get_mock_crowd_score(location, h, "weekend" if is_weekend else "weekday")
+        prediction_result = {
+            "crowd_score": score,
+            "crowd_label": "Moderate" if score <= 60 else "High" if score <= 80 else "Very High",
+            "confidence": 65.0,
+            "model_used": "Heuristic (no ML model loaded)"
+        }
+    
+    # Calculate live data percentage
+    live_count = sum(1 for f in features_detailed if f["is_live"])
+    live_percentage = round((live_count / len(features_detailed)) * 100, 1)
+    
+    return {
+        "query": f"Crowd prediction for {location} at hour {h}",
+        "location": location,
+        "hour": h,
+        "day": now.strftime("%A"),
+        "timestamp": now.isoformat(),
+        "ml_model_features": {
+            "total_features": 16,
+            "features_array": feature_values,
+            "features_detailed": features_detailed,
+            "live_data_percentage": live_percentage
+        },
+        "prediction": prediction_result,
+        "data_sources_summary": {
+            "weather": {"source": weather_source, "data": weather},
+            "traffic": {"source": traffic_source, "data": traffic},
+            "tides": {"source": tides_source, "data": tides},
+            "events": {"source": events_source, "data": events},
+            "aqi": {"source": aqi_source, "data": aqi},
+            "social": {"source": social_source, "data": social}
+        }
+    }
+
 
 
 @router.get("/model-info")
