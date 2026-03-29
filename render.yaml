@@ -10,13 +10,21 @@ services:
         sync: false
       - key: SUPABASE_KEY
         sync: false
-      - key: OPENAI_API_KEY
+      - key: OPENROUTER_API_KEY
         sync: false
-      - key: TIDE_API_KEY
+      - key: CROWDSENSE_ENTERPRISE_KEY_2026
         sync: false
-      - key: WEATHER_API_KEY
+      - key: WORLD_TIDES_API_KEY
         sync: false
-      - key: AQI_API_KEY
+      - key: OPENWEATHER_API_KEY
+        sync: false
+      - key: AIRVISUAL_API_KEY
+        sync: false
+      - key: PREDICT_HQ_API_KEY
+        sync: false
+      - key: TOMTOM_API_KEY
+        sync: false
+      - key: X_BEARER_TOKEN
         sync: false
       - key: PYTHON_VERSION
         value: 3.10.0
