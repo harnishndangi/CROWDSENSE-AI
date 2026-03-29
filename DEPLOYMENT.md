@@ -41,7 +41,7 @@ The frontend is a Next.js application located in the `/frontend` directory.
 
 ### 2. Environment Variables
 Add these in the Vercel project settings:
-- `NEXT_PUBLIC_API_URL`: The URL of your Render backend (e.g., `https://crowdsense-backend.onrender.com`).
+- `NEXT_PUBLIC_API_URL`: https://crowdsense-ai-es1r.onrender.com
 - `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase URL.
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase Anon Key.
 - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: Required for the Live Map feature.
