@@ -1,0 +1,9 @@
+1. Geocoding [OK] Lat: 19.2358216, Lon: 73.1308101
+2. Weather [OK] Temp: 33.22C, Condition: Clear
+3. Traffic [OK] Congestion Ratio: 1.32
+4. TomTom Flow [OK] Speed: 5 km/h, Ratio: 1.2
+5. TomTom Incidents [OK] Count: 0
+6. AQI [OK] AQI: 85, Label: Moderate
+7. Events [OK] Found 1 upcoming events.
+8. Tides [OK] Tide Level: Low, Height: 1.2
+9. X Signals [OK] Sentiment: Neutral, Reports: 2

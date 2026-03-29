@@ -1,0 +1,65 @@
+{
+  "location": "Kalyan Station",
+  "geo_info": {
+    "lat": 19.2358216,
+    "lon": 73.1308101,
+    "display_name": "Kalyan Junction, Kalyan-Murbad Road, Kalyan, Kalyan-Dombivli, Kalyan Subdistrict, Thane, Maharashtra, 421306, India",
+    "area_type": "railway",
+    "is_coastal": false,
+    "resolved": true
+  },
+  "hour": 16,
+  "day_type": 1,
+  "weather": {
+    "condition": "Clear",
+    "temp": 34.95,
+    "humidity": 25,
+    "wind": 7.55,
+    "rain": 0,
+    "source": "live"
+  },
+  "traffic": {
+    "traffic_level": 1,
+    "congestion_ratio": 1.26,
+    "source": "live"
+  },
+  "tides": {
+    "tide_level": "N/A",
+    "height": 0,
+    "source": "n/a"
+  },
+  "aqi": {
+    "aqi": 85,
+    "label": "Moderate",
+    "source": "cached"
+  },
+  "prediction": "Low",
+  "raw_score": 4.8,
+  "confidence": 0.81,
+  "reasons": [
+    "Here are three specific, factual bullet points explaining why the crowd prediction for Kalyan Station at 16:00 on a Weekend is 'Low':",
+    "Kalyan Station is a suburban railway station with relatively low foot traffic on weekends.",
+    "The average daily passenger count at Kalyan Station is around 20,000, with a peak during weekdays.",
+    "The station's proximity to the Thane-Belapur Road reduces the likelihood of heavy weekend crowds."
+  ],
+  "suggestions": [
+    "Alternative 1:",
+    "Alternative 2:"
+  ],
+  "trace": [
+    "Step 1: Parsing natural language query...",
+    "  Parsed \u2192 location='Kalyan Station', hour=16, day_type=1, intent='predict'",
+    "Step 2: Geocoding 'Kalyan Station' via OpenStreetMap Nominatim...",
+    "  Resolved \u2192 lat=19.2358, lon=73.1308, area_type='railway', coastal=False, display='Kalyan Junction, Kalyan-Murbad Road, Kalyan, Kalyan-Dombivli'",
+    "Step 3: Fetching live signals at lat=19.2358, lon=73.1308...",
+    "  Weather \u2192 {'condition': 'Clear', 'temp': 34.95, 'humidity': 25, 'wind': 7.55, 'rain': 0, 'source': 'live'}",
+    "  Traffic \u2192 {'traffic_level': 1, 'congestion_ratio': 1.26, 'source': 'live'}",
+    "  AQI \u2192 {'aqi': 85, 'label': 'Moderate', 'source': 'cached'}",
+    "  Events \u2192 1 found",
+    "  Tides \u2192 skipped (non-coastal)",
+    "Step 4: Running ML inference with live feature vector...",
+    "  ML Model \u2192 Low (raw_score=4.8, confidence=0.81)",
+    "Step 5: Generating contextual explanation via LLM...",
+    "Step 6: Generating smart alternatives..."
+  ]
+}

@@ -1,0 +1,613 @@
+{
+  "_meta": {
+    "project": "CrowdSense Mumbai",
+    "version": "1.0.0",
+    "inspiration": [
+      "M Indicator Redesign UI Kit – Dribbble #6033723",
+      "M Indicator Train Live Tracking – Dribbble #23035638",
+      "M Indicator Onboarding Interaction – Dribbble #5897983"
+    ],
+    "description": "Design token system derived from M Indicator's Mumbai-native transit UI language. Dark navy base, high-contrast orange brand, crowd-severity scale (green → amber → orange → red), monospace data numerics.",
+    "last_updated": "2026-03-28"
+  },
+
+  "color": {
+
+    "brand": {
+      "primary":       { "hex": "#F97316", "name": "Mumbai Orange",   "usage": "Logo, CTAs, active tab indicators, key highlights" },
+      "primary_dark":  { "hex": "#C2570A", "name": "Deep Orange",     "usage": "Pressed state, hover on primary" },
+      "primary_light": { "hex": "#FED7AA", "name": "Soft Orange",     "usage": "Orange tinted backgrounds, badges" },
+      "primary_glow":  { "hex": "#F9731620", "name": "Orange Glow",  "usage": "Subtle glow ring on active elements" }
+    },
+
+    "background": {
+      "base":          { "hex": "#0B0F1A", "name": "Midnight Navy",   "usage": "App root background — darkest surface" },
+      "surface":       { "hex": "#111827", "name": "Deep Navy",       "usage": "Main panel background" },
+      "elevated":      { "hex": "#1A2035", "name": "Card Navy",       "usage": "Cards, sidebars, modals" },
+      "overlay":       { "hex": "#1F2845", "name": "Hover Navy",      "usage": "Hover states, row highlights" },
+      "border":        { "hex": "#2A3352", "name": "Subtle Border",   "usage": "Dividers, card borders" },
+      "border_strong": { "hex": "#3B4A6B", "name": "Strong Border",  "usage": "Active/focused element borders" }
+    },
+
+    "text": {
+      "primary":   { "hex": "#F0EEE8", "name": "Warm White",   "usage": "Headings, primary labels, key data values" },
+      "secondary": { "hex": "#9CA3B8", "name": "Cool Gray",    "usage": "Subtitles, descriptions, muted labels" },
+      "tertiary":  { "hex": "#4B5472", "name": "Dim Slate",    "usage": "Placeholders, disabled text, timestamps" },
+      "inverse":   { "hex": "#0B0F1A", "name": "Dark Ink",     "usage": "Text on light/orange backgrounds" },
+      "accent":    { "hex": "#F97316", "name": "Orange Text",  "usage": "Highlighted values, links, active items" }
+    },
+
+    "crowd_severity": {
+      "_description": "The core semantic scale for CrowdSense. Applied consistently across cards, bars, badges, map pins, and sidebar dots.",
+      "low": {
+        "label":        "Low",
+        "hex":          "#22C55E",
+        "hex_dim":      "#15803D",
+        "hex_bg":       "#14532D25",
+        "hex_border":   "#22C55E40",
+        "text":         "#4ADE80",
+        "usage":        "Crowd level Low — platforms clear, safe to travel"
+      },
+      "medium": {
+        "label":        "Medium",
+        "hex":          "#EAB308",
+        "hex_dim":      "#A16207",
+        "hex_bg":       "#71350025",
+        "hex_border":   "#EAB30840",
+        "text":         "#FDE047",
+        "usage":        "Crowd level Medium — moderate crowding, manageable"
+      },
+      "high": {
+        "label":        "High",
+        "hex":          "#F97316",
+        "hex_dim":      "#C2570A",
+        "hex_bg":       "#7C2D1225",
+        "hex_border":   "#F9731640",
+        "text":         "#FB923C",
+        "usage":        "Crowd level High — busy, plan accordingly"
+      },
+      "very_high": {
+        "label":        "Very High",
+        "hex":          "#EF4444",
+        "hex_dim":      "#B91C1C",
+        "hex_bg":       "#7F1D1D25",
+        "hex_border":   "#EF444450",
+        "text":         "#F87171",
+        "usage":        "Crowd level Very High — severe crowding, avoid or delay"
+      }
+    },
+
+    "signal": {
+      "_description": "Used for weather, traffic, agent, and system status indicators.",
+      "live":     { "hex": "#22C55E", "bg": "#14532D30", "border": "#22C55E40", "label": "Live feed active" },
+      "cached":   { "hex": "#F59E0B", "bg": "#78350F30", "border": "#F59E0B40", "label": "Serving cached data" },
+      "error":    { "hex": "#EF4444", "bg": "#7F1D1D30", "border": "#EF444440", "label": "API or model error" },
+      "ai":       { "hex": "#818CF8", "bg": "#31218130", "border": "#818CF860", "label": "AI/Agent actions, LangGraph trace" },
+      "rain":     { "hex": "#60A5FA", "bg": "#1E3A5F30", "border": "#60A5FA40", "label": "Monsoon/rain weather signal" },
+      "event":    { "hex": "#A78BFA", "bg": "#2E1F5E30", "border": "#A78BFA40", "label": "Festival or event override" }
+    },
+
+    "transport_line": {
+      "_description": "Mumbai-specific line color coding matching real CR/WR/Metro identities.",
+      "western_railway":  { "hex": "#F97316", "label": "WR — Western Railway" },
+      "central_railway":  { "hex": "#EF4444", "label": "CR — Central Railway" },
+      "harbour_line":     { "hex": "#EAB308", "label": "Harbour Line" },
+      "metro_line_1":     { "hex": "#60A5FA", "label": "Metro L1 — Versova-Ghatkopar" },
+      "metro_line_2a":    { "hex": "#34D399", "label": "Metro L2A — Dahisar-DN Nagar" },
+      "metro_line_7":     { "hex": "#A78BFA", "label": "Metro L7 — Dahisar East-Andheri East" },
+      "best_bus":         { "hex": "#FB923C", "label": "BEST Bus" },
+      "monorail":         { "hex": "#F472B6", "label": "Mumbai Monorail" }
+    },
+
+    "neutral": {
+      "50":  "#F9F8F6",
+      "100": "#E8E6DF",
+      "200": "#C5C2B8",
+      "300": "#9CA3B8",
+      "400": "#6B7280",
+      "500": "#4B5472",
+      "600": "#374160",
+      "700": "#2A3352",
+      "800": "#1A2035",
+      "900": "#111827",
+      "950": "#0B0F1A"
+    }
+  },
+
+  "typography": {
+
+    "font_family": {
+      "display":  "'Plus Jakarta Sans', 'Inter', sans-serif",
+      "body":     "'Inter', 'SF Pro Text', sans-serif",
+      "mono":     "'JetBrains Mono', 'Fira Code', monospace",
+      "_note":    "Mono is used for ALL numeric data values — confidence %, crowd counts, timestamps, feature importance scores. This is the M Indicator influence: numbers feel precise and scannable."
+    },
+
+    "scale": {
+      "display_xl": { "size": "32px", "weight": 700,  "line_height": 1.2,  "usage": "App name in splash/onboarding" },
+      "display_lg": { "size": "28px", "weight": 700,  "line_height": 1.25, "usage": "Hero crowd level label (VERY HIGH)" },
+      "heading_1":  { "size": "22px", "weight": 600,  "line_height": 1.3,  "usage": "Section titles, tab headers" },
+      "heading_2":  { "size": "18px", "weight": 600,  "line_height": 1.35, "usage": "Card titles, location names" },
+      "heading_3":  { "size": "15px", "weight": 500,  "line_height": 1.4,  "usage": "Subsection labels, sidebar items" },
+      "body_lg":    { "size": "15px", "weight": 400,  "line_height": 1.6,  "usage": "Reason explanations, descriptions" },
+      "body_md":    { "size": "13px", "weight": 400,  "line_height": 1.6,  "usage": "Default body, card content" },
+      "body_sm":    { "size": "12px", "weight": 400,  "line_height": 1.5,  "usage": "Meta info, timestamps, source badges" },
+      "label":      { "size": "11px", "weight": 500,  "line_height": 1.4,  "usage": "ALL CAPS section labels, nav items" },
+      "mono_xl":    { "size": "36px", "weight": 700,  "font": "mono",      "usage": "Confidence percentage hero number" },
+      "mono_lg":    { "size": "24px", "weight": 600,  "font": "mono",      "usage": "Crowd score, prediction confidence in cards" },
+      "mono_md":    { "size": "14px", "weight": 500,  "font": "mono",      "usage": "Feature importance values, hour labels" },
+      "mono_sm":    { "size": "11px", "weight": 400,  "font": "mono",      "usage": "Timestamps, axis labels, version numbers" }
+    },
+
+    "case": {
+      "section_label": "UPPERCASE with 0.08em letter-spacing",
+      "nav_item":      "Sentence case",
+      "crowd_level":   "UPPERCASE — LOW / MEDIUM / HIGH / VERY HIGH",
+      "button":        "Sentence case"
+    }
+  },
+
+  "spacing": {
+    "_unit": "4px base grid — all values are multiples of 4",
+    "1":  "4px",
+    "2":  "8px",
+    "3":  "12px",
+    "4":  "16px",
+    "5":  "20px",
+    "6":  "24px",
+    "8":  "32px",
+    "10": "40px",
+    "12": "48px",
+    "16": "64px",
+    "20": "80px",
+
+    "semantic": {
+      "card_padding":         "16px 20px",
+      "card_padding_compact": "12px 16px",
+      "sidebar_padding":      "16px 12px",
+      "section_gap":          "12px",
+      "inline_gap":           "8px",
+      "icon_text_gap":        "6px",
+      "list_item_gap":        "4px"
+    }
+  },
+
+  "border_radius": {
+    "none":   "0px",
+    "sm":     "4px",
+    "md":     "8px",
+    "lg":     "12px",
+    "xl":     "16px",
+    "2xl":    "20px",
+    "pill":   "9999px",
+
+    "semantic": {
+      "card":         "12px",
+      "chip":         "6px",
+      "badge":        "4px",
+      "button":       "8px",
+      "input":        "8px",
+      "nav_item":     "6px",
+      "avatar":       "9999px",
+      "tooltip":      "6px",
+      "heatmap_cell": "3px",
+      "bar_chart":    "4px 4px 0 0"
+    }
+  },
+
+  "border": {
+    "default":  "0.5px solid #2A3352",
+    "hover":    "0.5px solid #3B4A6B",
+    "active":   "1px solid #F97316",
+    "focus":    "1.5px solid #F9731680",
+    "card":     "0.5px solid #2A3352",
+    "divider":  "0.5px solid #1F2845"
+  },
+
+  "shadow": {
+    "_note":    "No drop shadows — dark mode uses elevation via lighter fills, not shadows. M Indicator principle.",
+    "none":     "none",
+    "focus_ring": "0 0 0 3px #F9731630"
+  },
+
+  "elevation": {
+    "_description": "Elevation is communicated by fill lightness, not shadows.",
+    "0": { "bg": "#0B0F1A", "label": "Root / page background" },
+    "1": { "bg": "#111827", "label": "Main surface" },
+    "2": { "bg": "#1A2035", "label": "Cards, panels" },
+    "3": { "bg": "#1F2845", "label": "Hover states, selected rows" },
+    "4": { "bg": "#2A3352", "label": "Tooltips, dropdowns, modals" }
+  },
+
+  "components": {
+
+    "navbar": {
+      "background":       "#0B0F1A",
+      "border_bottom":    "0.5px solid #1F2845",
+      "height":           "52px",
+      "padding":          "0 20px",
+      "logo_color":       "#F0EEE8",
+      "logo_dot_color":   "#F97316",
+      "logo_dot_glow":    "#F9731660",
+      "tagline_color":    "#4B5472",
+      "tab_active_color": "#F97316",
+      "tab_active_border":"2px solid #F97316",
+      "tab_inactive":     "#6B7280"
+    },
+
+    "sidebar": {
+      "background":       "#0B0F1A",
+      "border_right":     "0.5px solid #1A2035",
+      "width":            "220px",
+      "section_label":    { "color": "#374160", "size": "10px", "weight": 500, "transform": "uppercase", "letter_spacing": "0.1em" },
+      "nav_item": {
+        "default":        { "bg": "transparent", "color": "#6B7280", "border": "0.5px solid transparent" },
+        "hover":          { "bg": "#1A2035",     "color": "#9CA3B8", "border": "0.5px solid transparent" },
+        "active":         { "bg": "#1A2035",     "color": "#F0EEE8", "border": "0.5px solid #2A3352" }
+      },
+      "nav_dot_size":     "6px",
+      "mini_stat_bg":     "#13161E",
+      "mini_stat_border": "0.5px solid #1F2330"
+    },
+
+    "card": {
+      "background":       "#1A2035",
+      "border":           "0.5px solid #2A3352",
+      "border_radius":    "12px",
+      "padding":          "16px 20px",
+      "title_color":      "#F0EEE8",
+      "subtitle_color":   "#9CA3B8",
+      "hover_bg":         "#1F2845",
+      "hover_border":     "0.5px solid #3B4A6B"
+    },
+
+    "crowd_card": {
+      "_description": "The main prediction output card — most important component in the system",
+      "background":       "#1A2035",
+      "border":           "0.5px solid #2A3352",
+      "border_radius":    "12px",
+      "padding":          "16px 20px",
+      "level_font_size":  "28px",
+      "level_font_weight":700,
+      "level_font_family":"'Plus Jakarta Sans', sans-serif",
+      "confidence_font":  "mono",
+      "confidence_size":  "36px",
+      "confidence_color": "#F0EEE8",
+      "reason_dot_size":  "4px",
+      "reason_text_size": "13px",
+      "reason_text_color":"#9CA3B8",
+      "reason_line_height":1.6,
+      "suggestion_chip": {
+        "bg":     "#818CF810",
+        "border": "0.5px solid #818CF830",
+        "color":  "#A5B4FC",
+        "radius": "6px",
+        "padding":"4px 12px",
+        "size":   "11px"
+      },
+      "confidence_bar": {
+        "height":      "4px",
+        "radius":      "2px",
+        "track_color": "#2A3352"
+      }
+    },
+
+    "badge": {
+      "live": {
+        "bg":     "#14532D30",
+        "border": "0.5px solid #22C55E40",
+        "color":  "#4ADE80",
+        "dot":    "#22C55E"
+      },
+      "cached": {
+        "bg":     "#78350F30",
+        "border": "0.5px solid #F59E0B40",
+        "color":  "#FCD34D",
+        "dot":    "#F59E0B"
+      },
+      "ai": {
+        "bg":     "#31218130",
+        "border": "0.5px solid #818CF860",
+        "color":  "#A5B4FC"
+      }
+    },
+
+    "bar_chart": {
+      "bar_radius":       "3px 3px 0 0",
+      "bar_gap":          "3px",
+      "current_marker":   "#F97316",
+      "axis_color":       "#374160",
+      "axis_font_size":   "9px",
+      "label_font":       "mono",
+      "colors": {
+        "low":       { "fill": "#22C55E30", "border": "0.5px solid #22C55E50" },
+        "medium":    { "fill": "#EAB30850", "border": "0.5px solid #EAB30840" },
+        "high":      { "fill": "#F9731680", "border": "0.5px solid #F9731660" },
+        "very_high": { "fill": "#EF444480", "border": "0.5px solid #EF444460" }
+      }
+    },
+
+    "heatmap": {
+      "cell_radius":  "3px",
+      "cell_gap":     "2px",
+      "axis_color":   "#374160",
+      "axis_size":    "9px",
+      "colors": {
+        "low":       "#22C55E30",
+        "medium":    "#EAB30845",
+        "high":      "#F9731660",
+        "very_high": "#EF444470"
+      },
+      "text_colors": {
+        "low":       "#22C55E",
+        "medium":    "#EAB308",
+        "high":      "#F97316",
+        "very_high": "#EF4444"
+      }
+    },
+
+    "agent_trace": {
+      "step_done": {
+        "circle_bg":     "#14532D30",
+        "circle_border": "0.5px solid #22C55E40",
+        "dot_color":     "#22C55E",
+        "text_color":    "#4B5472"
+      },
+      "step_active": {
+        "circle_bg":     "#31218130",
+        "circle_border": "0.5px solid #818CF860",
+        "dot_color":     "#818CF8",
+        "dot_animation": "pulse 1.5s infinite",
+        "text_color":    "#A5B4FC"
+      },
+      "step_pending": {
+        "circle_bg":     "#1F2845",
+        "circle_border": "0.5px solid #2A3352",
+        "dot_color":     "#374160",
+        "text_color":    "#2A3352"
+      },
+      "connector_color": "#1F2845",
+      "connector_width": "0.5px"
+    },
+
+    "feature_importance_bar": {
+      "track_bg":     "#1F2845",
+      "track_height": "4px",
+      "track_radius": "2px",
+      "label_color":  "#4B5472",
+      "label_size":   "9px",
+      "value_font":   "mono",
+      "value_size":   "9px",
+      "colors": {
+        "hour":      "#818CF8",
+        "traffic":   "#F97316",
+        "weather":   "#60A5FA",
+        "day_type":  "#A78BFA",
+        "event":     "#6B7280",
+        "month":     "#34D399",
+        "is_event":  "#F472B6"
+      }
+    },
+
+    "query_input": {
+      "background":   "#13161E",
+      "border":       "0.5px solid #2A3352",
+      "border_radius":"8px",
+      "padding":      "10px 14px",
+      "placeholder":  "#4B5472",
+      "text":         "#F0EEE8",
+      "icon_color":   "#818CF8",
+      "send_button": {
+        "bg":     "#818CF810",
+        "border": "0.5px solid #818CF830",
+        "color":  "#818CF8",
+        "radius": "4px"
+      }
+    },
+
+    "toggle": {
+      "track_off":    "#1F2845",
+      "track_on":     "#F97316",
+      "thumb":        "#F0EEE8",
+      "width":        "32px",
+      "height":       "18px",
+      "thumb_size":   "14px",
+      "radius":       "9px"
+    },
+
+    "slider": {
+      "track_bg":     "#2A3352",
+      "track_fill":   "#F97316",
+      "thumb_color":  "#F97316",
+      "thumb_size":   "16px",
+      "track_height": "4px"
+    },
+
+    "button": {
+      "primary": {
+        "bg":           "#F97316",
+        "bg_hover":     "#C2570A",
+        "color":        "#0B0F1A",
+        "border":       "none",
+        "radius":       "8px",
+        "padding":      "10px 20px",
+        "font_weight":  600,
+        "font_size":    "13px"
+      },
+      "secondary": {
+        "bg":           "transparent",
+        "bg_hover":     "#1F2845",
+        "color":        "#9CA3B8",
+        "border":       "0.5px solid #2A3352",
+        "radius":       "8px",
+        "padding":      "10px 20px",
+        "font_weight":  500,
+        "font_size":    "13px"
+      },
+      "ghost": {
+        "bg":           "transparent",
+        "bg_hover":     "#1A2035",
+        "color":        "#F97316",
+        "border":       "none",
+        "font_size":    "13px"
+      }
+    },
+
+    "tab": {
+      "active": {
+        "color":         "#F97316",
+        "border_bottom": "2px solid #F97316",
+        "font_weight":   600
+      },
+      "inactive": {
+        "color":         "#6B7280",
+        "border_bottom": "2px solid transparent",
+        "font_weight":   400
+      },
+      "bg":              "#0B0F1A",
+      "border_bottom":   "0.5px solid #1F2845"
+    },
+
+    "simulation_panel": {
+      "background":  "#13161E",
+      "border":      "0.5px solid #1F2845",
+      "radius":      "10px",
+      "padding":     "12px 16px",
+      "label_color": "#4B5472",
+      "note_color":  "#818CF8",
+      "note_bg":     "#818CF808",
+      "note_border": "0.5px solid #818CF820"
+    },
+
+    "signal_mini_card": {
+      "background":     "#13161E",
+      "border":         "0.5px solid #1F2330",
+      "radius":         "8px",
+      "padding":        "10px",
+      "value_size":     "18px",
+      "value_weight":   500,
+      "value_font":     "mono",
+      "label_size":     "10px",
+      "label_color":    "#4B5472",
+      "label_transform":"uppercase",
+      "label_spacing":  "0.06em"
+    }
+  },
+
+  "animation": {
+    "duration": {
+      "fast":   "120ms",
+      "normal": "200ms",
+      "slow":   "350ms",
+      "pulse":  "2s"
+    },
+    "easing": {
+      "default":  "cubic-bezier(0.4, 0, 0.2, 1)",
+      "in":       "cubic-bezier(0.4, 0, 1, 1)",
+      "out":      "cubic-bezier(0, 0, 0.2, 1)",
+      "spring":   "cubic-bezier(0.34, 1.56, 0.64, 1)"
+    },
+    "keyframes": {
+      "pulse_dot":    "0%,100% { opacity:1 } 50% { opacity:0.35 }",
+      "trace_appear": "from { opacity:0; transform:translateY(4px) } to { opacity:1; transform:translateY(0) }",
+      "bar_grow":     "from { transform:scaleY(0) } to { transform:scaleY(1) }",
+      "card_in":      "from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) }"
+    }
+  },
+
+  "layout": {
+    "max_width":        "1440px",
+    "sidebar_width":    "220px",
+    "right_panel_width":"200px",
+    "topbar_height":    "52px",
+    "main_padding":     "16px",
+    "column_gap":       "0px",
+
+    "grid": {
+      "desktop":  "220px 1fr 200px",
+      "tablet":   "1fr",
+      "mobile":   "1fr",
+      "breakpoints": {
+        "mobile":  "640px",
+        "tablet":  "1024px",
+        "desktop": "1280px"
+      }
+    }
+  },
+
+  "streamlit_overrides": {
+    "_description": "Direct CSS injection values for Streamlit custom theming via st.markdown + unsafe_allow_html or config.toml",
+    "config_toml": {
+      "primaryColor":         "#F97316",
+      "backgroundColor":      "#0B0F1A",
+      "secondaryBackgroundColor": "#111827",
+      "textColor":            "#F0EEE8",
+      "font":                 "sans serif"
+    },
+    "custom_css_notes": [
+      "Use st.set_page_config(layout='wide', page_title='CrowdSense Mumbai') to enable wide layout",
+      "Inject <style> block via st.markdown to override .stSidebar, .stMetric, .stButton",
+      "Metric values: font-family monospace, color #F97316 for crowd-coded values",
+      "Tab active underline: border-bottom: 2px solid #F97316",
+      "Hide Streamlit default hamburger and footer via style injection"
+    ]
+  },
+
+  "icon_system": {
+    "_description": "No emoji in production UI. Use lucide-react or custom SVG icons only.",
+    "crowd_icons": {
+      "low":       "users (small, green)",
+      "medium":    "users (medium, amber)",
+      "high":      "users (large, orange)",
+      "very_high": "alert-triangle + users (red)"
+    },
+    "transport_icons": {
+      "railway":   "train-front",
+      "metro":     "cable-car",
+      "bus":       "bus",
+      "cab":       "car",
+      "auto":      "car (smaller variant)",
+      "beach":     "waves",
+      "religious": "landmark",
+      "mall":      "shopping-bag",
+      "market":    "store"
+    },
+    "signal_icons": {
+      "rain":      "cloud-rain",
+      "clear":     "sun",
+      "storm":     "cloud-lightning",
+      "traffic_low":  "gauge (green)",
+      "traffic_high": "gauge (red)",
+      "event":     "calendar-check",
+      "live":      "radio",
+      "cached":    "database"
+    },
+    "agent_icons": {
+      "parse":     "search",
+      "fetch":     "download-cloud",
+      "predict":   "cpu",
+      "explain":   "message-square",
+      "suggest":   "lightbulb"
+    }
+  },
+
+  "voice_and_tone": {
+    "crowd_level_labels": {
+      "low":       "LOW — Platforms clear",
+      "medium":    "MEDIUM — Manageable",
+      "high":      "HIGH — Plan ahead",
+      "very_high": "VERY HIGH — Avoid or delay"
+    },
+    "source_labels": {
+      "live":   "Live",
+      "cached": "Cached"
+    },
+    "tab_names": {
+      "commuter":  "Commuter",
+      "planner":   "City Planner",
+      "organizer": "Event Organizer"
+    },
+    "placeholder_query": "Will Andheri station be crowded tonight at 7 PM?",
+    "app_tagline": "Predict the crowd. Beat the rush."
+  }
+}

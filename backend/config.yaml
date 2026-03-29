@@ -1,0 +1,66 @@
+locations:
+  - name: "Andheri Station"
+    type: "railway"
+    peak_hours: [8, 9, 10, 18, 19, 20]
+  - name: "CST Station"
+    type: "railway"
+    peak_hours: [8, 9, 10, 17, 18, 19]
+  - name: "Dadar Station"
+    type: "railway"
+    peak_hours: [8, 9, 10, 11, 14, 18, 19, 20]
+  - name: "Churchgate Station"
+    type: "railway"
+    peak_hours: [8, 9, 10, 17, 18, 19]
+  - name: "Bandra West"
+    type: "cab_zone"
+    peak_hours: [18, 19, 20, 21, 22]
+  - name: "Borivali Station"
+    type: "railway"
+    peak_hours: [8, 9, 10, 18, 19, 20]
+  - name: "Kurla Station"
+    type: "railway"
+    peak_hours: [8, 9, 10, 17, 18, 19, 20]
+  - name: "Ghatkopar Station"
+    type: "railway"
+    peak_hours: [8, 9, 10, 18, 19, 20]
+  - name: "Juhu Beach"
+    type: "beach"
+    peak_hours: [17, 18, 19, 20, 21]
+  - name: "Siddhivinayak Temple"
+    type: "religious"
+    peak_hours: [6, 12, 18, 19, 20]
+  - name: "Gateway of India"
+    type: "tourist"
+    peak_hours: [17, 18, 19, 20]
+  - name: "Marine Drive"
+    type: "beach"
+    peak_hours: [18, 19, 20, 21]
+  - name: "Haji Ali"
+    type: "religious"
+    peak_hours: [11, 12, 13, 17, 18]
+  - name: "Worli Sea Link"
+    type: "cab_zone"
+    peak_hours: [8, 9, 10, 18, 19, 20]
+  - name: "Kala Ghoda"
+    type: "market"
+    peak_hours: [12, 13, 14, 18, 19, 20]
+  - name: "Colaba Causeway"
+    type: "market"
+    peak_hours: [17, 18, 19, 20, 21]
+  - name: "Phoenix MarketCity"
+    type: "mall"
+    peak_hours: [18, 19, 20, 21]
+  - name: "Infiniti Mall"
+    type: "mall"
+    peak_hours: [18, 19, 20, 21]
+  - name: "Crawford Market"
+    type: "market"
+    peak_hours: [11, 12, 13, 14, 15, 16, 17]
+  - name: "Fashion Street"
+    type: "market"
+    peak_hours: [16, 17, 18, 19, 20]
+
+monsoon_months: [6, 7, 8, 9]
+peak_periods:
+  morning: [8, 9, 10, 11]
+  evening: [17, 18, 19, 20, 21]

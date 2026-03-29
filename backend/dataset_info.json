@@ -1,0 +1,188 @@
+{
+    "2503cbde-d71c-4a46-a9eb-d66fcfb5d4a5.csv": {
+        "path": "c:\\Users\\HARNISH N DANGI\\OneDrive\\Desktop\\Team_Technexis-Hack4Innovation-26\\backend\\datasets\\2503cbde-d71c-4a46-a9eb-d66fcfb5d4a5.csv",
+        "columns": [
+            "Traffic Division",
+            "Total Challan",
+            "Total Challan Amount",
+            "Paid Challan",
+            "Paid Challan Amount",
+            "Unpaid Challan",
+            "Unpaid Challan Amount"
+        ]
+    },
+    "569ba591-fea7-43df-96d6-ecfdb2b0cd78.csv": {
+        "path": "c:\\Users\\HARNISH N DANGI\\OneDrive\\Desktop\\Team_Technexis-Hack4Innovation-26\\backend\\datasets\\569ba591-fea7-43df-96d6-ecfdb2b0cd78.csv",
+        "columns": [
+            "Traffic Police Station",
+            "Total Challan",
+            "Total Challan Amount",
+            "Paid Challan",
+            "Paid Challan Amount",
+            "Unpaid Challan",
+            "Unpaid Challan Amount"
+        ]
+    },
+    "99b6b391-b1cb-47eb-a356-a18f1bfcb58f.csv": {
+        "path": "c:\\Users\\HARNISH N DANGI\\OneDrive\\Desktop\\Team_Technexis-Hack4Innovation-26\\backend\\datasets\\99b6b391-b1cb-47eb-a356-a18f1bfcb58f.csv",
+        "columns": [
+            "Vehicle Types",
+            "Total Challan",
+            "Total Challan Amount",
+            "Paid Challan",
+            "Paid Challan Amount",
+            "Unpaid Challan",
+            "Unpaid Challan Amount"
+        ]
+    },
+    "mumbai_master_dataset_v3.csv": {
+        "path": "c:\\Users\\HARNISH N DANGI\\OneDrive\\Desktop\\Team_Technexis-Hack4Innovation-26\\backend\\datasets\\mumbai_master_dataset_v3.csv",
+        "columns": [
+            "date",
+            "day_of_week",
+            "day_of_month",
+            "day_of_year",
+            "week_number",
+            "month_number",
+            "month_name",
+            "quarter",
+            "year",
+            "season",
+            "is_weekend",
+            "is_workday",
+            "is_weekday_mon_fri",
+            "time_slot_24hr",
+            "time_slot_12hr",
+            "hour",
+            "time_period_of_day",
+            "location",
+            "zone",
+            "category",
+            "area_type",
+            "peak_hour_category",
+            "crowd_score_0_to_100",
+            "weather_condition",
+            "is_monsoon_season",
+            "is_public_holiday",
+            "is_festival_eve",
+            "festival_name",
+            "festival_type",
+            "festival_intensity_1_to_5",
+            "festival_duration_days",
+            "festival_notes"
+        ]
+    },
+    "Mumbai Local Train Dataset.csv": {
+        "path": "c:\\Users\\HARNISH N DANGI\\OneDrive\\Desktop\\Team_Technexis-Hack4Innovation-26\\backend\\datasets\\archive (3)\\Mumbai Local Train Dataset.csv",
+        "columns": [
+            "Station",
+            "Station Code",
+            "Line",
+            "Distance From Previous of the Line",
+            "Time taken From Previous of the Line",
+            "About",
+            "Platforms",
+            "Tracks",
+            "Year of Opening ",
+            "Nearby attractions",
+            "Number of Passengers ",
+            "Previous names"
+        ]
+    },
+    "cleaned_bus.csv.csv": {
+        "path": "c:\\Users\\HARNISH N DANGI\\OneDrive\\Desktop\\Team_Technexis-Hack4Innovation-26\\backend\\datasets\\archive (5)\\cleaned_bus.csv.csv",
+        "columns": [
+            "Unnamed: 0",
+            "Operator",
+            "Departure Time",
+            "Travel Duration",
+            "Arrival Time",
+            "price",
+            "Bus Type",
+            "Seats Left",
+            "Window Seats",
+            "rating",
+            "Source",
+            "Destination",
+            "distance"
+        ]
+    },
+    "rainfall.csv": {
+        "path": "c:\\Users\\HARNISH N DANGI\\OneDrive\\Desktop\\Team_Technexis-Hack4Innovation-26\\backend\\datasets\\archive (6)\\rainfall.csv",
+        "columns": [
+            "datetime",
+            "temp",
+            "dew",
+            "humidity",
+            "sealevelpressure",
+            "winddir",
+            "solarradiation",
+            "windspeed",
+            "precipprob",
+            "preciptype"
+        ]
+    },
+    "mumbai-monthly-rains.csv": {
+        "path": "c:\\Users\\HARNISH N DANGI\\OneDrive\\Desktop\\Team_Technexis-Hack4Innovation-26\\backend\\datasets\\archive (7)\\mumbai-monthly-rains.csv",
+        "columns": [
+            "Year",
+            "Jan",
+            "Feb",
+            "Mar",
+            "April",
+            "May",
+            "June",
+            "July",
+            "Aug",
+            "Sept",
+            "Oct",
+            "Nov",
+            "Dec",
+            "Total"
+        ]
+    },
+    "2018.csv": {
+        "path": "c:\\Users\\HARNISH N DANGI\\OneDrive\\Desktop\\Team_Technexis-Hack4Innovation-26\\backend\\datasets\\archive (9)\\2018.csv",
+        "columns": [
+            "date",
+            "day",
+            "holiday",
+            "holiday_type"
+        ]
+    },
+    "2019.csv": {
+        "path": "c:\\Users\\HARNISH N DANGI\\OneDrive\\Desktop\\Team_Technexis-Hack4Innovation-26\\backend\\datasets\\archive (9)\\2019.csv",
+        "columns": [
+            "date",
+            "day",
+            "holiday",
+            "holiday_type"
+        ]
+    },
+    "2020.csv": {
+        "path": "c:\\Users\\HARNISH N DANGI\\OneDrive\\Desktop\\Team_Technexis-Hack4Innovation-26\\backend\\datasets\\archive (9)\\2020.csv",
+        "columns": [
+            "date",
+            "day",
+            "holiday",
+            "holiday_type"
+        ]
+    },
+    "2021.csv": {
+        "path": "c:\\Users\\HARNISH N DANGI\\OneDrive\\Desktop\\Team_Technexis-Hack4Innovation-26\\backend\\datasets\\archive (9)\\2021.csv",
+        "columns": [
+            "date",
+            "day",
+            "holiday",
+            "holiday_type"
+        ]
+    },
+    "2022.csv": {
+        "path": "c:\\Users\\HARNISH N DANGI\\OneDrive\\Desktop\\Team_Technexis-Hack4Innovation-26\\backend\\datasets\\archive (9)\\2022.csv",
+        "error": "Empty data"
+    },
+    "2023.csv": {
+        "path": "c:\\Users\\HARNISH N DANGI\\OneDrive\\Desktop\\Team_Technexis-Hack4Innovation-26\\backend\\datasets\\archive (9)\\2023.csv",
+        "error": "Empty data"
+    }
+}

@@ -1,0 +1,74 @@
+{
+  "location": "Koparkhairane Station",
+  "geo_info": {
+    "lat": 19.1050005,
+    "lon": 73.0037689,
+    "display_name": "Koparkhairane NMMT Bus Station Road, Kopar Khairne, Navi Mumbai, Thane Subdistrict, Thane, Maharashtra, 400709, India",
+    "area_type": "railway",
+    "is_coastal": false,
+    "resolved": true
+  },
+  "hour": 16,
+  "day_type": 1,
+  "weather": {
+    "condition": "Haze",
+    "temp": 31.03,
+    "humidity": 58,
+    "wind": 6.17,
+    "rain": 0,
+    "source": "live"
+  },
+  "traffic": {
+    "traffic_level": 1,
+    "congestion_ratio": 1.33,
+    "source": "live"
+  },
+  "tomtom": {
+    "incidents": {
+      "incidents": [],
+      "count": 0,
+      "source": "live"
+    },
+    "flow": {
+      "current_speed": 18,
+      "free_flow_speed": 18,
+      "congestion_ratio": 1.0,
+      "confidence": 1,
+      "source": "live"
+    }
+  },
+  "aqi": {
+    "aqi": 85,
+    "label": "Moderate",
+    "source": "cached"
+  },
+  "prediction": "Low",
+  "raw_score": 3.7,
+  "confidence": 0.81,
+  "reasons": [
+    "Here are three specific, factual bullet points explaining why the crowd prediction for Koparkhairane Station at 16:00 on a Weekend is 'Low':",
+    "**Low office crowd**: As it's a weekend, most offices in Koparkhairane are closed, reducing office-goers.",
+    "**Less local train commuters**: Regular Mumbai Commute events don't affect local trains on weekends, reducing commuters.",
+    "**Low shopping and entertainment**: Shopping and entertainment centers in Koparkhairane are less crowded on weekends, contributing to low crowd."
+  ],
+  "suggestions": [
+    "Alternative I don't have information on the current crowd at Koparkhairane Station at 16:00."
+  ],
+  "trace": [
+    "Step 1: Parsing natural language query...",
+    "  Parsed \u2192 location='Koparkhairane Station', hour=16, day_type=1, intent='predict'",
+    "Step 2: Geocoding 'Koparkhairane Station' via OpenStreetMap Nominatim...",
+    "  Resolved \u2192 lat=19.1050, lon=73.0038, area_type='railway', coastal=False, display='Koparkhairane NMMT Bus Station Road, Kopar Khairne, Navi Mum'",
+    "Step 3: Fetching live signals at lat=19.1050, lon=73.0038...",
+    "  Weather \u2192 {'condition': 'Haze', 'temp': 31.03, 'humidity': 58, 'wind': 6.17, 'rain': 0, 'source': 'live'}",
+    "  Traffic (GMap) \u2192 {'traffic_level': 1, 'congestion_ratio': 1.33, 'source': 'live'}",
+    "  TomTom \u2192 0 incidents, Flow Ratio: 1.0",
+    "  AQI \u2192 {'aqi': 85, 'label': 'Moderate', 'source': 'cached'}",
+    "  Events \u2192 1 found",
+    "  Tides \u2192 skipped (non-coastal)",
+    "Step 4: Running ML inference with live feature vector...",
+    "  ML Model \u2192 Low (raw_score=3.7, confidence=0.81)",
+    "Step 5: Generating contextual explanation via LLM...",
+    "Step 6: Generating smart alternatives..."
+  ]
+}
